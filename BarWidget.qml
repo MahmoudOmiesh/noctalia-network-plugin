@@ -149,7 +149,7 @@ Item {
           }
 
           NText {
-            text: root.isVertical ? SystemStatService.formatCompactSpeed(speed) : SystemStatService.formatSpeed(speed).padStart(5, " ")
+            text: root.isVertical ? SystemStatService.formatCompactSpeed(speed) : SystemStatService.formatSpeed(speed).padEnd(5, " ")
             family: Settings.data.ui.fontFixed
             pointSize: root.barFontSize
             applyUiScale: false
