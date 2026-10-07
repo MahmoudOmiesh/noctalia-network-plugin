@@ -5,8 +5,15 @@
   "minNoctaliaVersion": "4.7.6",
   "author": "omiesh",
   "license": "MIT",
+  "repository": "https://github.com/MahmoudOmiesh/noctalia-network-plugin",
   "description": "Network speed and listening ports in one bar widget, styled like the built-in pills.",
-  "tags": ["Bar", "Panel", "Network", "System", "Development"],
+  "tags": [
+    "Bar",
+    "Panel",
+    "Network",
+    "System",
+    "Development"
+  ],
   "entryPoints": {
     "main": "Main.qml",
     "barWidget": "BarWidget.qml",
