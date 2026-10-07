@@ -18,9 +18,6 @@ Item {
   readonly property var mainInstance: pluginApi?.mainInstance
   readonly property var listeners: mainInstance?.listeners ?? []
 
-  // Key of the listener awaiting stop confirmation, or "".
-  property string confirmKey: ""
-
   anchors.fill: parent
 
   Component.onCompleted: SystemStatService.registerComponent("plugin-network-monitor-panel")
@@ -235,6 +232,7 @@ Item {
             Layout.fillHeight: true
             Layout.preferredHeight: portsList.implicitHeight
             contentWidth: availableWidth
+            handleWidth: Math.round(3 * Style.uiScaleRatio)
 
             ColumnLayout {
               id: portsList
@@ -247,7 +245,6 @@ Item {
                 delegate: NBox {
                   id: row
                   required property var modelData
-                  readonly property bool confirming: root.confirmKey === modelData.key
                   readonly property color chipAccent: modelData.localOnly ? Color.mOnSurfaceVariant : Color.mTertiary
 
                   Layout.fillWidth: true
@@ -314,7 +311,7 @@ Item {
                     }
 
                     RowLayout {
-                      visible: rowHover.hovered && !row.confirming
+                      visible: rowHover.hovered
                       spacing: Style.marginXS
 
                       NIconButton {
@@ -334,40 +331,10 @@ Item {
                         baseSize: Style.baseWidgetSize * 0.7
                         colorBgHover: Color.mError
                         colorFgHover: Color.mOnError
-                        onClicked: root.confirmKey = modelData.key
+                        onClicked: root.mainInstance?.killListener(modelData)
                       }
                     }
 
-                    RowLayout {
-                      visible: row.confirming
-                      spacing: Style.marginXS
-
-                      NText {
-                        text: pluginApi?.tr("panel.stop-confirm")
-                        pointSize: Style.fontSizeS
-                        color: Color.mError
-                      }
-
-                      NIconButton {
-                        icon: "check"
-                        tooltipText: pluginApi?.tr("panel.stop-process")
-                        baseSize: Style.baseWidgetSize * 0.7
-                        colorFg: Color.mError
-                        colorBgHover: Color.mError
-                        colorFgHover: Color.mOnError
-                        onClicked: {
-                          root.mainInstance?.killListener(modelData);
-                          root.confirmKey = "";
-                        }
-                      }
-
-                      NIconButton {
-                        icon: "arrow-back-up"
-                        tooltipText: pluginApi?.tr("panel.cancel")
-                        baseSize: Style.baseWidgetSize * 0.7
-                        onClicked: root.confirmKey = ""
-                      }
-                    }
                   }
                 }
               }

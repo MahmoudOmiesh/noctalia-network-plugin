@@ -20,9 +20,7 @@
     "local": "local",
     "exposed": "exposed",
     "open-in-browser": "Open in browser",
-    "stop-process": "Stop process",
-    "stop-confirm": "Stop?",
-    "cancel": "Cancel"
+    "stop-process": "Stop process"
   },
   "settings": {
     "show-speed": "Show speed",
