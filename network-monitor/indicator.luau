@@ -53,7 +53,7 @@ local function render()
     }))
   end
 
-  barWidget.render(container({ gap = 8, align = "center" }, parts))
+  barWidget.render(container({ gap = 6, align = "center" }, parts))
   renderTooltip()
 end
 
