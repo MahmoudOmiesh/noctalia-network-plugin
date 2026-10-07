@@ -20,12 +20,21 @@ Item {
 
   // Raw `ss` output is kept so filter changes re-apply without a new scan.
   property string ssOutput: ""
-  property var listeners: parseListeners(ssOutput, {
-                                           "includeUdp": includeUdp,
-                                           "hideSystemPorts": hideSystemPorts,
-                                           "onlyOwnProcesses": onlyOwnProcesses
-                                         })
+  readonly property var parsedListeners: parseListeners(ssOutput, {
+                                                          "includeUdp": includeUdp,
+                                                          "hideSystemPorts": hideSystemPorts,
+                                                          "onlyOwnProcesses": onlyOwnProcesses
+                                                        })
+  property var listeners: []
   readonly property int listenerCount: listeners.length
+
+  // Only publish a new array when something changed, so panel rows (and their hover state)
+  // aren't recreated on every poll.
+  onParsedListenersChanged: {
+    if (JSON.stringify(parsedListeners) !== JSON.stringify(listeners)) {
+      listeners = parsedListeners;
+    }
+  }
 
   Component.onCompleted: refresh()
 
