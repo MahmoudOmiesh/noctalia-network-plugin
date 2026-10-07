@@ -1,0 +1,29 @@
+{
+  "id": "network-monitor",
+  "name": "Network Monitor",
+  "version": "1.0.0",
+  "minNoctaliaVersion": "4.7.6",
+  "author": "omiesh",
+  "license": "MIT",
+  "description": "Network speed and listening ports in one bar widget, styled like the built-in pills.",
+  "tags": ["Bar", "Panel", "Network", "System", "Development"],
+  "entryPoints": {
+    "main": "Main.qml",
+    "barWidget": "BarWidget.qml",
+    "panel": "Panel.qml",
+    "settings": "Settings.qml"
+  },
+  "dependencies": {
+    "plugins": []
+  },
+  "metadata": {
+    "defaultSettings": {
+      "showSpeed": true,
+      "showPorts": true,
+      "refreshInterval": 5,
+      "hideSystemPorts": true,
+      "onlyOwnProcesses": false,
+      "includeUdp": false
+    }
+  }
+}
