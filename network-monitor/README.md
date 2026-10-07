@@ -1,0 +1,95 @@
+# Network Monitor
+
+Shows download and upload speed alongside the number of listening ports in one bar capsule. Open the panel for traffic history and quick actions on each listener.
+
+## Plugin
+
+| Field | Value |
+| --- | --- |
+| ID | `mahmoudomiesh/network-monitor` |
+| Entries | Bar widget: `indicator`; panels: `panel`, `menu`; service: `scanner` |
+
+## Requirements
+
+Noctalia v5 with plugin API 26 or newer. Tested with v5.2.1 on Linux.
+
+Install these commands on `PATH`:
+
+| Command | When it runs |
+| --- | --- |
+| `ss` | At startup, every refresh interval, and when you request a refresh. Runs `ss -tulnpH`. |
+| `kill` | When you select Stop for a listener with a known PID. Sends SIGTERM. |
+| `fuser` | When you select Stop for a listener whose PID is hidden. Runs through `pkexec` with `-k <port>/<proto>`. |
+| `pkexec` | Elevates the `fuser` action. Requires a polkit agent and may ask for authentication. |
+| `xdg-open` | When you select Open in browser for a TCP listener. Opens `http://localhost:<port>`. |
+
+`fuser -k` can terminate every process using that port and protocol.
+
+## Usage
+
+Enable the plugin in Settings → Plugins. Add the `mahmoudomiesh/network-monitor:indicator` widget to your bar.
+
+The bar shows compact rates such as `↓120K ↑34K` and a plug with the listener count. A direction's arrow uses the primary theme color above 1024 B/s. Rates use decimal units. The port count hides when zero. Disabling both display options leaves a clickable plug.
+
+Left-click toggles the network panel. Middle-click refreshes listeners. Right-click opens the `menu` panel with Refresh and Settings. Hover the widget for full rates and up to eight listener rows.
+
+Open the main panel from IPC:
+
+```sh
+noctalia msg panel-toggle mahmoudomiesh/network-monitor:panel
+```
+
+The panel shows download/upload history and a scrollable listener list. Hover a row for Open in browser and Stop. Opening a port closes the panel. Stop acts immediately, keeps the panel open, and refreshes the list about 600 ms after the command finishes. UDP rows only offer Stop.
+
+The menu can also be opened from IPC:
+
+```sh
+noctalia msg panel-toggle mahmoudomiesh/network-monitor:menu
+```
+
+Settings in the header or menu opens this plugin's settings. The scanner starts automatically when the plugin is enabled.
+
+## Settings
+
+| Setting | Type | Default | Description |
+| --- | --- | --- | --- |
+| `show_speed` | `bool` | `true` | Show download and upload speed in the bar. |
+| `show_ports` | `bool` | `true` | Show the listener count when greater than zero. |
+| `refresh_interval` | `int` | `5` | Seconds between listener scans, from 1 to 30. Traffic follows the shell's network poll interval. |
+| `hide_system_ports` | `bool` | `true` | Hide ports below 1024. |
+| `only_own_processes` | `bool` | `false` | Only show listeners with a visible PID. Visibility depends on `ss` permissions. |
+| `include_udp` | `bool` | `false` | Include UDP sockets. |
+
+## IPC
+
+Refresh listeners:
+
+```sh
+noctalia msg plugin mahmoudomiesh/network-monitor:scanner all refresh
+```
+
+Run the parser, command-selection, rate-format and network-counter tests inside the shell:
+
+```sh
+mkdir -p /tmp/netmon
+noctalia msg plugin mahmoudomiesh/network-monitor:scanner all selftest
+cat /tmp/netmon/selftest-output.txt
+```
+
+IPC dispatch is asynchronous. Wait for the file if it has not appeared yet. An optional payload chooses the output path. Each test prints `ok` or `not ok`; failures also appear in the shell log.
+
+Export the current listener and traffic snapshot:
+
+```sh
+noctalia msg plugin mahmoudomiesh/network-monitor:scanner all status /tmp/netmon/status.json
+```
+
+## Notes
+
+Traffic normally comes from Noctalia's system monitor, including its interface aggregation. If the monitor or network polling is disabled, the scanner reads `/proc/net/dev` once a second and uses deltas from interfaces with a hardware device in `/sys/class/net`. This excludes loopback, bridges, tunnels and virtual links. The graph retains up to 60 samples while the service runs.
+
+IPv4 and IPv6 binds with the same protocol, port and PID merge into one row. Known PIDs sort before unknown ones, then by port. The local chip means every bind address is loopback. An exposed bind can still be protected by a firewall.
+
+The plugin sends no network requests itself. Open in browser launches your browser, which can make requests to the selected local service. The selftest and status IPC actions write only to the requested output path, defaulting to `/tmp/netmon/`. Normal monitoring writes no files.
+
+The right-click menu uses an attached panel because v5.2.1 exposes native context menus only to panel callbacks. Scrollbar geometry follows the host's controls.

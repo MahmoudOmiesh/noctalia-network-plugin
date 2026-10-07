@@ -1,11 +1,29 @@
 # Network Monitor
 
-A Noctalia Shell plugin that shows network speed and listening ports in one bar capsule, styled like the built-in widgets.
+A Noctalia v5 plugin for network speed, listening ports, and actions to open or stop a listener. See the [plugin README](network-monitor/README.md) for requirements, usage, settings, and IPC commands.
 
-- **Bar:** `↓rx ↑tx 🔌count`. Left click opens the panel, right click opens a menu, middle click refreshes.
-- **Panel:** a live traffic graph and the list of listening ports. Hover a row to open it in a browser or stop its process. Stopping a process owned by another user goes through `pkexec`.
-- **IPC:** `qs -c noctalia-shell ipc call plugin:network-monitor toggle` (or `refresh`).
+## Local installation
 
-Requires `ss` (iproute2). Stopping root-owned ports needs `fuser` (psmisc) and a polkit agent.
+Run from this checkout:
 
-Check the `ss` parser with `node scripts/parse-check.mjs`.
+```sh
+mkdir -p "${XDG_DATA_HOME:-$HOME/.local/share}/noctalia/plugins"
+ln -s "$PWD/network-monitor" "${XDG_DATA_HOME:-$HOME/.local/share}/noctalia/plugins/network-monitor"
+noctalia msg config-reload
+noctalia msg plugins enable mahmoudomiesh/network-monitor
+```
+
+Add the bar widget `mahmoudomiesh/network-monitor:indicator` in Settings. If the shell had the plugin enabled before its files existed, restart Noctalia to instantiate its entries. Luau edits then hot-reload.
+
+The `network-monitor/` directory is the complete installable plugin and matches the community source layout. The QML implementation remains on `main` and at `v4-final`.
+
+## Verification
+
+With the plugin enabled in a running shell:
+
+```sh
+noctalia plugins lint network-monitor
+python3 scripts/verify-live.py
+```
+
+The live script needs Python 3 and `setsid`. It runs 22 bundled tests, starts a temporary HTTP listener, verifies the published listener data, stops that process by PID, and verifies removal. It does not change your configuration.
