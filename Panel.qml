@@ -322,7 +322,10 @@ Item {
                         icon: "external-link"
                         tooltipText: pluginApi?.tr("panel.open-in-browser")
                         baseSize: Style.baseWidgetSize * 0.7
-                        onClicked: root.mainInstance?.openInBrowser(modelData)
+                        onClicked: {
+                          root.mainInstance?.openInBrowser(modelData);
+                          pluginApi.closePanel(pluginApi.panelOpenScreen);
+                        }
                       }
 
                       NIconButton {

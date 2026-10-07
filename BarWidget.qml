@@ -130,7 +130,7 @@ Item {
           rows: root.isVertical ? -1 : 1
           columns: root.isVertical ? 1 : -1
           rowSpacing: Style.marginXXS
-          columnSpacing: Style.marginXS
+          columnSpacing: Style.marginXXS
           Layout.alignment: Qt.AlignCenter
 
           Item {
@@ -149,7 +149,7 @@ Item {
           }
 
           NText {
-            text: root.isVertical ? SystemStatService.formatCompactSpeed(speed) : SystemStatService.formatSpeed(speed).padEnd(5, " ")
+            text: root.isVertical ? SystemStatService.formatCompactSpeed(speed) : SystemStatService.formatSpeed(speed).replace(/B$/, "").padEnd(4, " ")
             family: Settings.data.ui.fontFixed
             pointSize: root.barFontSize
             applyUiScale: false
@@ -157,14 +157,6 @@ Item {
             Layout.alignment: Qt.AlignCenter
           }
         }
-      }
-
-      Rectangle {
-        visible: root.speedVisible && root.portsVisible
-        implicitWidth: root.isVertical ? Math.round(root.capsuleHeight * 0.45) : 1
-        implicitHeight: root.isVertical ? 1 : Math.round(root.capsuleHeight * 0.45)
-        color: Qt.alpha(root.fgColor, 0.2)
-        Layout.alignment: Qt.AlignCenter
       }
 
       // Falls back to a bare plug icon when nothing else is shown so the widget stays clickable.
