@@ -1,7 +1,6 @@
 --!nonstrict
 
 local listeners = require("./listeners.luau")
-local netdev = require("./netdev.luau")
 
 local TICK_MS = 1000
 local HISTORY_LENGTH = 60
@@ -11,10 +10,6 @@ local scanPending = false
 local nextScanAt = 0
 local lastSampleAt = 0
 local rxHistory, txHistory = {}, {}
-local previousCounters = {}
-local physicalInterfaces = {}
-local netReadPending = false
-local fallbackSampleAt = 0
 
 local function publishListeners()
   local list = listeners.parse(ssOutput, {
@@ -59,37 +54,12 @@ local function publishTraffic(rx: number, tx: number)
 end
 
 local function sampleTraffic(now: number)
-  local pollSeconds = noctalia.getSetting("system.monitor.network_poll_seconds")
   local stats = noctalia.systemStats()
-  if stats ~= nil and pollSeconds > 0 then
-    if now - lastSampleAt >= pollSeconds * 1000 then
-      lastSampleAt = now
-      publishTraffic(stats.net.rxBytesPerSec, stats.net.txBytesPerSec)
-    end
-    return
+  local pollSeconds = noctalia.getSetting("system.monitor.network_poll_seconds")
+  if stats ~= nil and pollSeconds > 0 and now - lastSampleAt >= pollSeconds * 1000 then
+    lastSampleAt = now
+    publishTraffic(stats.net.rxBytesPerSec, stats.net.txBytesPerSec)
   end
-  if netReadPending or now - fallbackSampleAt < TICK_MS then
-    return
-  end
-  netReadPending = noctalia.readFileAsync("/proc/net/dev", function(text, err)
-    netReadPending = false
-    if text == nil then
-      noctalia.log(`Could not read network counters: {err}`)
-      return
-    end
-    local current = netdev.parse(text)
-    for name in current do
-      if physicalInterfaces[name] == nil then
-        -- A hardware device excludes loopback, bridges, tunnels and virtual links.
-        physicalInterfaces[name] = noctalia.readFile(`/sys/class/net/{name}/device/uevent`) ~= nil
-      end
-    end
-    local sampledAt = noctalia.nowMs()
-    local rx, tx = netdev.rates(current, previousCounters, (sampledAt - fallbackSampleAt) / 1000, physicalInterfaces)
-    previousCounters = current
-    fallbackSampleAt = sampledAt
-    publishTraffic(rx, tx)
-  end)
 end
 
 function update()
@@ -122,7 +92,6 @@ function onIpc(event)
     local ok, err = pcall(function()
       require("./tests/listeners_test.luau")(noctalia.log)
       require("./tests/rates_test.luau")(noctalia.log)
-      require("./tests/netdev_test.luau")(noctalia.log)
     end)
     if not ok then
       noctalia.log(`not ok - {err}`)

@@ -76,7 +76,7 @@ noctalia msg plugin mahmoudomiesh/network-monitor:scanner all selftest
 
 ## Notes
 
-Traffic normally comes from Noctalia's system monitor, including its interface aggregation. If the monitor or network polling is disabled, the scanner reads `/proc/net/dev` once a second and uses deltas from interfaces with a hardware device in `/sys/class/net`. This excludes loopback, bridges, tunnels and virtual links. The graph retains up to 60 samples while the service runs.
+Traffic comes from Noctalia's system monitor (`[system.monitor]`), so it uses the same interface aggregation as the built-in `sysmon` widget. If that monitor or its network polling is disabled, the rates stay at zero. The graph keeps up to 60 samples while the service runs.
 
 IPv4 and IPv6 binds with the same protocol, port and PID merge into one row. Known PIDs sort before unknown ones, then by port. The local chip means every bind address is loopback. An exposed bind can still be protected by a firewall.
 
