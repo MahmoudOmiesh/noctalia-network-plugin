@@ -23,7 +23,7 @@ With the plugin enabled in a running shell:
 
 ```sh
 noctalia plugins lint network-monitor
-python3 scripts/verify-live.py
+noctalia msg plugin mahmoudomiesh/network-monitor:scanner all selftest
 ```
 
-The live script needs Python 3 and `setsid`. It runs 22 bundled tests, starts a temporary HTTP listener, verifies the published listener data, stops that process by PID, and verifies removal. It does not change your configuration.
+The selftest results appear in the shell log.

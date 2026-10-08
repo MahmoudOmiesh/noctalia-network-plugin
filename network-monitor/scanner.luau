@@ -115,30 +115,18 @@ noctalia.state.watch("scan", function(delayMs)
   end
 end)
 
-function onIpc(event, payload)
+function onIpc(event)
   if event == "refresh" then
     scan()
   elseif event == "selftest" then
-    local lines = {}
-    local function report(line)
-      table.insert(lines, line)
-      noctalia.log(line)
-    end
     local ok, err = pcall(function()
-      require("./tests/listeners_test.luau")(report)
-      require("./tests/rates_test.luau")(report)
-      require("./tests/netdev_test.luau")(report)
+      require("./tests/listeners_test.luau")(noctalia.log)
+      require("./tests/rates_test.luau")(noctalia.log)
+      require("./tests/netdev_test.luau")(noctalia.log)
     end)
     if not ok then
-      report(`not ok - {err}`)
+      noctalia.log(`not ok - {err}`)
     end
-    noctalia.writeFile(if payload ~= nil and payload ~= "" then payload else "/tmp/netmon/selftest-output.txt", table.concat(lines, "\n") .. "\n")
-  elseif event == "status" then
-    noctalia.writeFile(if payload ~= nil and payload ~= "" then payload else "/tmp/netmon/status.json", noctalia.json.encode({
-      listeners = noctalia.state.get("listeners") or {},
-      traffic = noctalia.state.get("traffic"),
-      scanError = noctalia.state.get("scan_error") == true,
-    }))
   end
 end
 

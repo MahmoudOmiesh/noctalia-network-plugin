@@ -68,20 +68,10 @@ Refresh listeners:
 noctalia msg plugin mahmoudomiesh/network-monitor:scanner all refresh
 ```
 
-Run the parser, command-selection, rate-format and network-counter tests inside the shell:
+Run the bundled tests inside the shell. Each case logs `ok` or `not ok` to the shell log:
 
 ```sh
-mkdir -p /tmp/netmon
 noctalia msg plugin mahmoudomiesh/network-monitor:scanner all selftest
-cat /tmp/netmon/selftest-output.txt
-```
-
-IPC dispatch is asynchronous. Wait for the file if it has not appeared yet. An optional payload chooses the output path. Each test prints `ok` or `not ok`; failures also appear in the shell log.
-
-Export the current listener and traffic snapshot:
-
-```sh
-noctalia msg plugin mahmoudomiesh/network-monitor:scanner all status /tmp/netmon/status.json
 ```
 
 ## Notes
@@ -90,6 +80,6 @@ Traffic normally comes from Noctalia's system monitor, including its interface a
 
 IPv4 and IPv6 binds with the same protocol, port and PID merge into one row. Known PIDs sort before unknown ones, then by port. The local chip means every bind address is loopback. An exposed bind can still be protected by a firewall.
 
-The plugin sends no network requests itself. Open in browser launches your browser, which can make requests to the selected local service. The selftest and status IPC actions write only to the requested output path, defaulting to `/tmp/netmon/`. Normal monitoring writes no files.
+The plugin sends no network requests itself. Open in browser launches your browser, which can make requests to the selected local service. It writes no files.
 
 The right-click menu uses an attached panel because v5.2.1 exposes native context menus only to panel callbacks. Scrollbar geometry follows the host's controls.
