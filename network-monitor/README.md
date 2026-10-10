@@ -76,10 +76,10 @@ noctalia msg plugin mahmoudomiesh/network-monitor:scanner all selftest
 
 ## Notes
 
-Traffic comes from Noctalia's system monitor (`[system.monitor]`), so it uses the same interface aggregation as the built-in `sysmon` widget. If that monitor or its network polling is disabled, the rates stay at zero. The graph keeps up to 60 samples while the service runs.
+Traffic comes from Noctalia's system monitor (`[system.monitor]`), so it uses the same interface aggregation as the built-in `sysmon` widget. If that monitor or its network polling is disabled, the rates stop updating. The graph keeps up to 60 samples while the service runs.
 
 IPv4 and IPv6 binds with the same protocol, port and PID merge into one row. Known PIDs sort before unknown ones, then by port. The local chip means every bind address is loopback. An exposed bind can still be protected by a firewall.
 
 The plugin sends no network requests itself. Open in browser launches your browser, which can make requests to the selected local service. It writes no files.
 
-The right-click menu uses an attached panel because v5.2.1 exposes native context menus only to panel callbacks. Scrollbar geometry follows the host's controls.
+The right-click menu uses an attached panel because v5.2.1 exposes native context menus only to panel callbacks.
