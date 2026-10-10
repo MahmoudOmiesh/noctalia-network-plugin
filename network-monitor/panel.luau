@@ -14,7 +14,6 @@ local scanError = noctalia.state.get("scan_error") == true
 local isOpen = false
 -- Hover transfers from a row to its buttons; render after both events arrive.
 local hoverCounts = {}
-local hoverDirty = false
 local hoverElapsed = 0
 
 local function trafficGraph()
@@ -61,8 +60,8 @@ end
 local function listenerRow(listener)
   local function onHover(state)
     hoverCounts[listener.key] = (hoverCounts[listener.key] or 0) + (if state == "true" then 1 else -1)
-    hoverDirty = true
     hoverElapsed = 0
+    panel.setNeedsFrameTick(true)
   end
   local hovered = (hoverCounts[listener.key] or 0) > 0
   local chipColor = if listener.localOnly then "on_surface_variant" else "tertiary"
@@ -197,8 +196,6 @@ end
 function onOpen()
   isOpen = true
   hoverCounts = {}
-  hoverDirty = false
-  panel.setNeedsFrameTick(true)
   noctalia.state.set("scan", 0)
   render()
 end
@@ -224,11 +221,9 @@ noctalia.state.watch("scan_error", function(value)
 end)
 
 function onFrameTick(deltaMs)
-  if hoverDirty then
-    hoverElapsed += tonumber(deltaMs)
-    if hoverElapsed >= HOVER_SETTLE_MS then
-      hoverDirty = false
-      render()
-    end
+  hoverElapsed += tonumber(deltaMs)
+  if hoverElapsed >= HOVER_SETTLE_MS then
+    panel.setNeedsFrameTick(false)
+    render()
   end
 end
