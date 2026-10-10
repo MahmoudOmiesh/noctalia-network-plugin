@@ -76,8 +76,8 @@ return function(report)
 
   local commands = {
     { name = "stop known pid", listener = node, expected = { "kill", "5000" } },
-    { name = "stop hidden owner", listener = llmnr, expected = { "pkexec", "fuser", "-k", "5355/tcp" } },
-    { name = "stop UDP listener", listener = dhcp, expected = { "pkexec", "fuser", "-k", "546/udp" } },
+    { name = "stop hidden owner", listener = llmnr, expected = { "pkexec", "fuser", "-k", "-TERM", "5355/tcp" } },
+    { name = "stop UDP listener", listener = dhcp, expected = { "pkexec", "fuser", "-k", "-TERM", "546/udp" } },
   }
   for _, case in commands do
     local actual = listeners.stopCommand(case.listener)

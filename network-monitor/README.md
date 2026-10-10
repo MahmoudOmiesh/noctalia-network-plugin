@@ -19,11 +19,11 @@ Install these commands on `PATH`:
 | --- | --- |
 | `ss` | At startup, every refresh interval, and when you request a refresh. Runs `ss -tulnpH`. |
 | `kill` | When you select Stop for a listener with a known PID. Sends SIGTERM. |
-| `fuser` | When you select Stop for a listener whose PID is hidden. Runs through `pkexec` with `-k <port>/<proto>`. |
+| `fuser` | When you select Stop for a listener whose PID is hidden. Runs through `pkexec` with `-k -TERM <port>/<proto>`. |
 | `pkexec` | Elevates the `fuser` action. Requires a polkit agent and may ask for authentication. |
 | `xdg-open` | When you select Open in browser for a TCP listener. Opens `http://localhost:<port>`. |
 
-`fuser -k` can terminate every process using that port and protocol.
+`fuser` sends SIGTERM to every process using that port and protocol.
 
 ## Usage
 

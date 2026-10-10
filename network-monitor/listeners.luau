@@ -100,7 +100,7 @@ function M.stopCommand(listener: Listener): { string }
   if listener.pid > 0 then
     return { "kill", tostring(listener.pid) }
   end
-  return { "pkexec", "fuser", "-k", `{listener.port}/{listener.proto}` }
+  return { "pkexec", "fuser", "-k", "-TERM", `{listener.port}/{listener.proto}` }
 end
 
 return M
