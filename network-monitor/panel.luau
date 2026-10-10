@@ -8,9 +8,7 @@ local GRAPH_MIN_PEAK = 10000
 local STOP_RESCAN_DELAY_MS = 600
 local HOVER_SETTLE_MS = 32
 
-local traffic = noctalia.state.get("traffic")
-local listeners = noctalia.state.get("listeners") or {}
-local scanError = noctalia.state.get("scan_error") == true
+local traffic, listeners, scanError
 local isOpen = false
 -- Hover transfers from a row to its buttons; render after both events arrive.
 local hoverCounts = {}
@@ -219,6 +217,11 @@ noctalia.state.watch("scan_error", function(value)
   scanError = value
   render()
 end)
+
+-- Read after the watches exist so a publish in between still arrives.
+traffic = noctalia.state.get("traffic")
+listeners = noctalia.state.get("listeners") or {}
+scanError = noctalia.state.get("scan_error") == true
 
 function onFrameTick(deltaMs)
   hoverElapsed += tonumber(deltaMs)

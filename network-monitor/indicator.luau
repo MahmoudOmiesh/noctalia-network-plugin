@@ -7,8 +7,7 @@ local TOOLTIP_PORTS = 8
 
 local showSpeed = noctalia.getConfig("show_speed")
 local showPorts = noctalia.getConfig("show_ports")
-local traffic = noctalia.state.get("traffic") or { rx = 0, tx = 0 }
-local listeners = noctalia.state.get("listeners") or {}
+local traffic, listeners
 
 local function rate(container, glyph: string, bytesPerSecond: number, vertical: boolean)
   local text = rates.compact(bytesPerSecond)
@@ -77,4 +76,7 @@ function onMiddleClick()
   noctalia.state.set("scan", 0)
 end
 
+-- Read after the watches exist so a publish in between still arrives.
+traffic = noctalia.state.get("traffic") or { rx = 0, tx = 0 }
+listeners = noctalia.state.get("listeners") or {}
 render()
