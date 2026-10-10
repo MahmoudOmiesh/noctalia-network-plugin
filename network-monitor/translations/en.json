@@ -1,4 +1,8 @@
 {
+  "context": {
+    "refresh": "Refresh",
+    "settings": "Settings"
+  },
   "panel": {
     "close": "Close",
     "exposed": "exposed",
@@ -8,12 +12,12 @@
     "open_in_browser": "Open in browser",
     "pid": "pid {pid}",
     "refresh": "Refresh",
+    "scan_error": "Could not scan listening ports",
     "settings": "Settings",
+    "stop": "Stop",
     "title": "Network",
     "traffic": "Traffic",
-    "unknown_process": "Unknown process",
-    "stop": "Stop",
-    "scan_error": "Could not scan listening ports"
+    "unknown_process": "Unknown process"
   },
   "settings": {
     "hide_system_ports": {
@@ -25,8 +29,8 @@
       "label": "Include UDP"
     },
     "only_own_processes": {
-      "label": "Only known processes",
-      "description": "Only show listeners with a visible process ID"
+      "description": "Only show listeners with a visible process ID",
+      "label": "Only known processes"
     },
     "refresh_interval": {
       "description": "How often to scan for listening ports, in seconds",
@@ -43,10 +47,6 @@
   },
   "tooltip": {
     "more": "+{count} more",
-    "speed": "\u2193 {rx}   \u2191 {tx}"
-  },
-  "context": {
-    "refresh": "Refresh",
-    "settings": "Settings"
+    "speed": "↓ {rx}   ↑ {tx}"
   }
 }

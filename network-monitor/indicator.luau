@@ -2,7 +2,6 @@
 
 local rates = require("./rates.luau")
 
-local PANEL_ID = "mahmoudomiesh/network-monitor:panel"
 local ACTIVE_BYTES_PER_SECOND = 1024
 local TOOLTIP_PORTS = 8
 
@@ -37,16 +36,15 @@ end
 local function render()
   local vertical = barWidget.isVertical()
   local container = if vertical then ui.column else ui.row
-  local speedShown = showSpeed
   local portsShown = showPorts and #listeners > 0
 
   local parts = {}
-  if speedShown then
+  if showSpeed then
     table.insert(parts, rate(container, "arrow-down", traffic.rx, vertical))
     table.insert(parts, rate(container, "arrow-up", traffic.tx, vertical))
   end
   -- A bare plug keeps the pill clickable when nothing else is shown.
-  if portsShown or not speedShown then
+  if portsShown or not showSpeed then
     table.insert(parts, container({ gap = 4, align = "center" }, {
       ui.glyph({ name = "plug-connected" }),
       ui.label({ text = tostring(#listeners), fontFamily = "monospace", visible = portsShown }),
@@ -68,7 +66,7 @@ noctalia.state.watch("listeners", function(value)
 end)
 
 function onClick()
-  noctalia.togglePanel(PANEL_ID)
+  noctalia.togglePanel("mahmoudomiesh/network-monitor:panel")
 end
 
 function onRightClick()

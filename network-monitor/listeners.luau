@@ -1,8 +1,7 @@
 --!nonstrict
--- Listening sockets, parsed from `ss -tulnpH`.
 
 export type Listener = {
-  key: string, -- "tcp:3000:4104"
+  key: string,
   port: number,
   proto: "tcp" | "udp",
   pid: number, -- 0 when the owner is hidden from us (another user or root)

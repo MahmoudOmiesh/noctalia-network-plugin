@@ -6,16 +6,16 @@ local rates = require("./rates.luau")
 -- Keep idle traffic from filling the graph just because its peak is small.
 local GRAPH_MIN_PEAK = 10000
 local STOP_RESCAN_DELAY_MS = 600
+local HOVER_SETTLE_MS = 32
 
 local traffic = noctalia.state.get("traffic")
 local listeners = noctalia.state.get("listeners") or {}
+local scanError = noctalia.state.get("scan_error") == true
 local isOpen = false
 -- Hover transfers from a row to its buttons; render after both events arrive.
 local hoverCounts = {}
 local hoverDirty = false
 local hoverElapsed = 0
-local scanError = noctalia.state.get("scan_error") == true
-local render
 
 local function trafficGraph()
   local peak = GRAPH_MIN_PEAK
@@ -162,7 +162,7 @@ local function portsCard()
   })
 end
 
-function render()
+local function render()
   if not isOpen then
     return
   end
@@ -218,17 +218,17 @@ noctalia.state.watch("listeners", function(value)
   render()
 end)
 
+noctalia.state.watch("scan_error", function(value)
+  scanError = value
+  render()
+end)
+
 function onFrameTick(deltaMs)
   if hoverDirty then
     hoverElapsed += tonumber(deltaMs)
-    if hoverElapsed >= 32 then
+    if hoverElapsed >= HOVER_SETTLE_MS then
       hoverDirty = false
       render()
     end
   end
 end
-
-noctalia.state.watch("scan_error", function(value)
-  scanError = value
-  render()
-end)
